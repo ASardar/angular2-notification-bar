@@ -1,14 +1,12 @@
 import {
     Component, OnInit, trigger, state, style, transition, animate, Optional, Inject,
     OpaqueToken, OnDestroy
-} from '@angular/core';
+}                                                           from '@angular/core';
 
-import { NotificationBarService } from './notification-bar.service';
-import { Notification, NotificationType } from '../index';
-import { MessagesConfig } from './message-config';
-import { Subscription } from 'rxjs';
-
-
+import { NotificationBarService }                           from './notification-bar.service';
+import { Notification, NotificationType }                   from '../index';
+import { MessagesConfig }                                   from './message-config';
+import { Subscription }                                     from 'rxjs';
 
 export const MESSAGES_CONFIG = new OpaqueToken('notification-bar.messages.config');
 
@@ -62,7 +60,7 @@ export const MESSAGES_CONFIG = new OpaqueToken('notification-bar.messages.config
           border-bottom: 1px solid #0c6997;
         }
         
-        .close-click {
+        .close-click, .copy-click {
           font-size: 22px;
           cursor: pointer;
           padding: 10px;
@@ -79,6 +77,7 @@ export const MESSAGES_CONFIG = new OpaqueToken('notification-bar.messages.config
                  [@flyDown]>
                 <span *ngIf="notification.isHtml" class="message" [innerHTML]="notification.message"></span>
                 <span *ngIf="!notification.isHtml" class="message">{{notification.message}}</span>
+                <span class="close-click" *ngIf="notification.allowCopy" (click)="copyNotification(notification)">c</span>
                 <span class="close-click" *ngIf="notification.allowClose" (click)="hideNotification(notification)">×</span>
             </div>
         </div>
@@ -116,7 +115,9 @@ export class NotificationBarComponent implements OnInit, OnDestroy {
         hideDelay: 3000,
         isHtml: false,
         allowClose: false,
-        hideOnHover: true
+        hideOnHover: true,
+        error: '',
+        allowCopy: false
     };
 
     subscription: Subscription;
@@ -150,6 +151,36 @@ export class NotificationBarComponent implements OnInit, OnDestroy {
         let index = this.notifications.indexOf(notification);
 
         this.notifications.splice(index, 1);
+    }
+
+    copyNotification(notification: Notification): void {
+        this.copyNotificationToClipboard(notification.error);
+    }
+
+    copyNotificationToClipboard(text) {
+        var txtArea = document.createElement("textarea");
+
+        txtArea.style.position = 'fixed';
+        txtArea.value = text;
+        document.body.appendChild(txtArea);
+        txtArea.select();
+        
+        try {
+            var successful = document.execCommand('copy');
+            var msg = successful ? 'successful' : 'unsuccessful';
+            
+            console.log('Copying text command was ' + msg);
+            
+            if (successful) {
+                return true;
+            }
+        } catch (err) {
+            console.log('Oops, unable to copy');
+        }
+        
+        document.body.removeChild(txtArea);
+
+        return false;
     }
 
     ngOnDestroy() {
