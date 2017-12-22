@@ -5,14 +5,12 @@ export * from './src/message-config';
 export enum NotificationType { Info, Success, Error, Warning }
 
 export interface Notification {
-    message: string;
-    error: string;
+    message: any;
     type?: NotificationType;
     typeValue?: string;
     autoHide?: boolean;
     hideDelay?: number;
     isHtml?: boolean;
     allowClose?: boolean;
-    allowCopy?: boolean;
     hideOnHover?: boolean;
 }

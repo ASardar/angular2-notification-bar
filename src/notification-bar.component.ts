@@ -68,6 +68,10 @@ export const MESSAGES_CONFIG = new OpaqueToken('notification-bar.messages.config
           top: 2px;
           margin: 0 auto;
         }
+
+        .copy-click {
+            font-size: 16px;
+        }
     `],
     template: `
         <div class="notifications-container">
@@ -77,7 +81,7 @@ export const MESSAGES_CONFIG = new OpaqueToken('notification-bar.messages.config
                  [@flyDown]>
                 <span *ngIf="notification.isHtml" class="message" [innerHTML]="notification.message"></span>
                 <span *ngIf="!notification.isHtml" class="message">{{notification.message}}</span>
-                <span class="close-click" *ngIf="notification.allowCopy" (click)="copyNotification(notification)">c</span>
+                <span class="close-click" *ngIf="notification.allowClose" (click)="copyNotification(notification)">c</span>
                 <span class="close-click" *ngIf="notification.allowClose" (click)="hideNotification(notification)">×</span>
             </div>
         </div>
@@ -108,6 +112,8 @@ export class NotificationBarComponent implements OnInit, OnDestroy {
 
     notifications: Notification[] = [];
 
+    allowCopy: boolean = false;
+
     defaults = {
         message: '',
         type: NotificationType.Info,
@@ -115,9 +121,7 @@ export class NotificationBarComponent implements OnInit, OnDestroy {
         hideDelay: 3000,
         isHtml: false,
         allowClose: false,
-        hideOnHover: true,
-        error: '',
-        allowCopy: false
+        hideOnHover: true
     };
 
     subscription: Subscription;
@@ -132,11 +136,6 @@ export class NotificationBarComponent implements OnInit, OnDestroy {
     ngOnInit() { }
 
     addNotification(notification: Notification) {
-        if (!notification.error) {
-            notification.error = '';
-            notification.allowCopy = false;
-        }
-        
         let newNotification = Object.assign({}, this.defaults, notification);
         newNotification.typeValue = NotificationType[newNotification.type].toLowerCase();
         if (this.config && this.config.messages) {
@@ -159,7 +158,7 @@ export class NotificationBarComponent implements OnInit, OnDestroy {
     }
 
     copyNotification(notification: Notification): void {
-        this.copyNotificationToClipboard(notification.error);
+        this.copyNotificationToClipboard(notification.message);
     }
 
     copyNotificationToClipboard(text) {
