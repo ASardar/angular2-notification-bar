@@ -132,6 +132,11 @@ export class NotificationBarComponent implements OnInit, OnDestroy {
     ngOnInit() { }
 
     addNotification(notification: Notification) {
+        if (!notification.error) {
+            notification.error = '';
+            notification.allowCopy = false;
+        }
+        
         let newNotification = Object.assign({}, this.defaults, notification);
         newNotification.typeValue = NotificationType[newNotification.type].toLowerCase();
         if (this.config && this.config.messages) {
