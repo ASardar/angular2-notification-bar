@@ -74,7 +74,7 @@ export const MESSAGES_CONFIG = new OpaqueToken('notification-bar.messages.config
             cursor: pointer;
             padding: 10px;
             position: relative;
-            top: 2px;
+            top: 0px;
             margin: 0 auto;
           }
     `],
